@@ -1,0 +1,80 @@
+version: '3.8'
+services:
+  angular:
+    build:
+      context: angular
+      target: builder
+    ports:
+      - 4200:4200
+    # restart: always
+    volumes:
+      - ./angular:/angular
+      - /angular/node_modules
+    depends_on:
+      - nodejs
+    networks:
+      - net_localhost
+
+  nodejs:
+    build: 
+      context: nodejs
+      target: builder
+    # restart: always
+    ports:
+      - '5000:5000'
+    env_file:
+      - ./nodejs/.env
+    volumes:
+      - ./nodejs:/nodejs
+      - /nodejs/node_modules
+    depends_on:
+      - mongodb
+    networks:
+      - net_localhost
+      - net_mongodb
+
+  nestjs:
+    build: 
+      context: nestjs
+      target: builder
+    # restart: always
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./nestjs:/nestjs
+      - /nestjs/node_modules
+    depends_on:
+      - mongodb
+    networks:
+      - net_localhost
+      - net_mongodb
+
+  reactjs:
+    build:
+      context: reactjs
+      target: builder
+    ports:
+      - 3000:3000
+    stdin_open: true
+    volumes:
+      - ./reactjs:/reactjs
+      - /reactjs/node_modules
+    # restart: always
+    networks:
+      - net_localhost
+    depends_on:
+      - nodejs
+  
+  mongodb:
+    restart: always
+    image: mongo:4.2.0
+    volumes:
+      - ./data:/data/db
+    networks:
+      - net_mongodb
+    expose:
+      - 27017
+
+networks:
+  net_localhost:
+  net_mongodb:
