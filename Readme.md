@@ -1,4 +1,4 @@
-## CREATE PROJECT FROM DOCKER IMAGE
+## AWESOME PROJECT
 #
 ```
 $ docker compose up --build
